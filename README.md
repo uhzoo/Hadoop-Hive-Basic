@@ -1,13 +1,13 @@
 # Installing Hadoop and Hive
-Step-by-step guide for installing a basic Hadoop and Hive environment.
+Step-by-step guide for installing a basic Hadoop and Hive.
 
-OS: Rocky 9.4 minimal install
+| Service  | Version |
+| ------------- | ------------- |
+|OS|Rocky 9.4 minimal install|
+|Hadoop|3.4.1|
+|Hive|4.0.1
+|Hive MetaStore|Postgresql 16|
 
-Hadoop: 3.4.1
-
-Hive: 4.0.1
-
-Hive MetaStore: Postgresql 16
 ## Install Hadoop
 Hadoop requires Java (JDK 8), so install it first.
 ```
