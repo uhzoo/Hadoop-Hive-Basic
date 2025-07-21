@@ -34,7 +34,7 @@ su - hadoop
 Useful commands like start-all.sh require passwordless SSH access, so we need to generate an SSH key and copy it to authorized hosts.
 ```
 ssh-keygen -t rsa -m PEM
-ssh-copy-id -i $(hostname -f)
+ssh-copy-id -i /home/hadoop/.ssh/id_rsa.pub $(hostname -f)
 ```
 Now let’s download the Hadoop installation file and extract it.
 ```
