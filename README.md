@@ -3,7 +3,7 @@ Step-by-step guide for installing a basic Hadoop and Hive.
 
 | Service  | Version |
 | ------------- | ------------- |
-|OS|Rocky 9.4 minimal install|
+|OS|Rocky Linux 9.4 Minimal, 4 vCPUs, 8 GB RAM|
 |Hadoop|3.4.1|
 |Hive|4.0.1
 |Hive MetaStore|Postgresql 16|
