@@ -71,7 +71,7 @@ Now we need to configure below files.
     </property>
 </configuration>
 ```
-/home/hadoop/hadoop-3.4.1/etc/hadoop/yarn-site.xml
+`/home/hadoop/hadoop-3.4.1/etc/hadoop/yarn-site.xml`
 ```
 <configuration>
     <property>
