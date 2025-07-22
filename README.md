@@ -252,7 +252,7 @@ vi /opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml;
    </property>
 </configuration>
 ```
-Create the following three configuration files from /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template for logging purposes, and update each file with the corresponding log directory and file name.
+Create the following three configuration files from `/opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template` for logging purposes, and update each file with the corresponding log directory and file name.
 ```
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties;
