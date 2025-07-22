@@ -41,7 +41,7 @@ wget https://dlcdn.apache.org/hadoop/common/hadoop-3.4.1/hadoop-3.4.1.tar.gz;
 tar -zxf hadoop-3.4.1.tar.gz -C /opt;
 chown -R hadoop. /opt/hadoop-3.4.1;
 ```
-We will store all Hadoop-related data under /data, so let's create the directory and give ownership to the hadoop user.
+We will store all Hadoop-related data under `/data`, so let's create the directory and give ownership to the hadoop user.
 ```bash
 mkdir -p /data;
 chown -R hadoop. /data;
