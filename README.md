@@ -162,6 +162,7 @@ Now let’s create the Hive user and database.
 ```
 CREATE USER hive WITH PASSWORD 'hive';
 CREATE DATABASE hive OWNER hive;
+\q;
 ```
 The Hive metastore is now ready to be installed.
 Let’s create the hive user and add it to the hadoop group.
