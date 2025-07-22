@@ -265,7 +265,7 @@ Now let’s create the Hive user and database.
 ```sql
 CREATE USER hive WITH PASSWORD 'hive';
 CREATE DATABASE hive OWNER hive;
-\q;
+\q
 ```
 The Hive metastore is now ready to be installed.
 Let’s create the hive user and add it to the hadoop group
@@ -307,66 +307,66 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-site.xml;
 ```
 ```xml
 <configuration>
-   <property>
-      <name>javax.jdo.option.ConnectionURL</name>
-      <value>jdbc:postgresql://test.hadoop.com:5432/hive?createDatabaseIfNotExist=true</value>
-      <description>JDBC connect string for a JDBC metastore</description>
-   </property>
-   <property>
-      <name>javax.jdo.option.ConnectionDriverName</name>
-      <value>org.postgresql.Driver</value>
-      <description>Driver class name for a JDBC metastore</description>
-   </property>
-   <property>
-      <name>javax.jdo.option.ConnectionUserName</name>
-      <value>hive</value>
-      <description>Username to use against metastore database</description>
-   </property>
-   <property>
-      <name>javax.jdo.option.ConnectionPassword</name>
-      <value>hive</value>
-      <description>Password to use against metastore database</description>
-   </property>
-   <property>
-      <name>datanucleus.autoCreateSchema</name>
-      <value>true</value>
-   </property>
-   <property>
-      <name>datanucleus.fixedDatastore</name>
-      <value>true</value>
-   </property>
-   <property>
-      <name>datanucleus.autoCreateTables</name>
-      <value>True</value>
-   </property>
-   <property>
-      <name>hive.metastore.warehouse.dir</name>
-      <value>/user/hive/warehouse</value>
-   </property>
-   <property>
-      <name>hive.server2.enable.doAs</name>
-      <value>true</value>
-   </property>
-   <property>
-      <name>hive.metastore.uris</name>
-      <value>thrift://test.hadoop.com:9083</value>
-   </property>
-   <property>
-      <name>hive.server2.webui.host</name>
-      <value>0.0.0.0</value>
-   </property>
-   <property>
-      <name>hive.server2.webui.port</name>
-      <value>10002</value>
-   </property>
-   <property>
-      <name>hive.server2.webui.use.ssl</name>
-      <value>false</value>
-   </property>
-   <property>
-      <name>hive.server2.thrift.http.port</name>
-      <value>10001</value> <!-- Optional: Beeline HS2 Web UI -->
-   </property>
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:postgresql://test.hadoop.com:5432/hive?createDatabaseIfNotExist=true</value>
+        <description>JDBC connect string for a JDBC metastore</description>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>org.postgresql.Driver</value>
+        <description>Driver class name for a JDBC metastore</description>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>hive</value>
+        <description>Username to use against metastore database</description>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>hive</value>
+        <description>Password to use against metastore database</description>
+    </property>
+    <property>
+        <name>datanucleus.autoCreateSchema</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>datanucleus.fixedDatastore</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>datanucleus.autoCreateTables</name>
+        <value>True</value>
+    </property>
+    <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>/user/hive/warehouse</value>
+    </property>
+    <property>
+        <name>hive.server2.enable.doAs</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://test.hadoop.com:9083</value>
+    </property>
+    <property>
+        <name>hive.server2.webui.host</name>
+        <value>0.0.0.0</value>
+    </property>
+    <property>
+        <name>hive.server2.webui.port</name>
+        <value>10002</value>
+    </property>
+    <property>
+        <name>hive.server2.webui.use.ssl</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>hive.server2.thrift.http.port</name>
+        <value>10001</value> <!-- Optional: Beeline HS2 Web UI -->
+    </property>
 </configuration>
 ```
 For convenience, create `/opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml` to preconfigure Beeline login credentials.
@@ -375,14 +375,14 @@ vi /opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml;
 ```
 ```xml
 <configuration>
-   <property>
-      <name>beeline.hs2.connection.user</name>
-      <value>hive</value>
-   </property>
-   <property>
-      <name>beeline.hs2.connection.password</name>
-      <value>hive</value>
-   </property>
+    <property>
+        <name>beeline.hs2.connection.user</name>
+        <value>hive</value>
+    </property>
+    <property>
+        <name>beeline.hs2.connection.password</name>
+        <value>hive</value>
+    </property>
 </configuration>
 ```
 Create the following three configuration files from `/opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template` for logging purposes. For each file, update the log directory and file name appropriately.
