@@ -344,12 +344,28 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-site.xml;
       <value>/user/hive/warehouse</value>
    </property>
    <property>
+      <name>hive.server2.enable.doAs</name>
+      <value>true</value>
+   </property>
+   <property>
       <name>hive.metastore.uris</name>
       <value>thrift://test.hadoop.com:9083</value>
    </property>
    <property>
-      <name>hive.server2.enable.doAs</name>
-      <value>true</value>
+      <name>hive.server2.webui.host</name>
+      <value>0.0.0.0</value>
+   </property>
+   <property>
+      <name>hive.server2.webui.port</name>
+      <value>10002</value>
+   </property>
+   <property>
+      <name>hive.server2.webui.use.ssl</name>
+      <value>false</value>
+   </property>
+   <property>
+      <name>hive.server2.thrift.http.port</name>
+      <value>10001</value> <!-- Optional: Beeline HS2 Web UI -->
    </property>
 </configuration>
 ```
