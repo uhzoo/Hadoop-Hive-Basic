@@ -244,7 +244,7 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-site.xml;
    </property>
    <property>
       <name>hive.metastore.uris</name>
-      <value>thrift://test1.hadoop.com:9083</value>
+      <value>thrift://test.hadoop.com:9083</value>
    </property>
    <property>
       <name>hive.server2.enable.doAs</name>
