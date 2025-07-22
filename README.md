@@ -54,14 +54,16 @@ Now we need to configure `HADOOP_HOME` and `JAVA_HOME` in `/opt/hadoop-3.4.1/etc
 You can find your `JAVA_HOME` path using the command: `readlink -f /usr/bin/java`
 ```
 vi /opt/hadoop-3.4.1/etc/hadoop/hadoop-env.sh;
+```
+```
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.462.b08-3.el9.x86_64/jre
 export HADOOP_HOME=/opt/hadoop-3.4.1
 ```
-Now we need to configure below files.
-
-`/opt/hadoop-3.4.1/etc/hadoop/core-site.xml`
+Now we need to configure the following files.
 ```
 vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
+```
+```
 <configuration>
     <property>
         <name>fs.defaultFS</name>
@@ -70,9 +72,10 @@ vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
     </property>
 </configuration>
 ```
-`/opt/hadoop-3.4.1/etc/hadoop/hdfs-site.xml`
 ```
 vi /opt/hadoop-3.4.1/etc/hadoop/hdfs-site.xml;
+```
+```
 <configuration>
     <property>
         <name>dfs.replication</name>
@@ -81,9 +84,10 @@ vi /opt/hadoop-3.4.1/etc/hadoop/hdfs-site.xml;
     </property>
 </configuration>
 ```
-`/opt/hadoop-3.4.1/etc/hadoop/yarn-site.xml`
 ```
 vi /opt/hadoop-3.4.1/etc/hadoop/yarn-site.xml;
+```
+```
 <configuration>
     <property>
         <name>yarn.nodemanager.aux-services</name>
@@ -97,9 +101,10 @@ vi /opt/hadoop-3.4.1/etc/hadoop/yarn-site.xml;
     </property>
 </configuration>
 ```
-`/opt/hadoop-3.4.1/etc/hadoop/mapred-site.xml`
 ```
 vi /opt/hadoop-3.4.1/etc/hadoop/mapred-site.xml;
+```
+```
 <configuration>
     <property>
         <name>mapreduce.framework.name</name>
@@ -124,6 +129,8 @@ Now lets start all services.
 If you see the following output from `jps -m`, it means the setup was successful.
 ```
 jps -m;
+```
+```
 16098 ResourceManager
 16210 NodeManager
 15559 NameNode
@@ -151,10 +158,13 @@ postgresql-16-setup initdb;
 To allow both local and remote connections to PostgreSQL, set listen_addresses to '*' from `/var/lib/pgsql/16/data/postgresql.conf` and update `/var/lib/pgsql/16/data/pg_hba.conf` as shown below.
 ```
 vi /var/lib/pgsql/16/data/postgresql.conf;
+```
+```
 # listen_addresses = 'localhost'
 listen_addresses = '*'
-
+```
 vi /var/lib/pgsql/16/data/pg_hba.conf;
+```
 # host    all             all             127.0.0.1/32            scram-sha-256
 host    all             all             ${YOUR_IP}/24            scram-sha-256
 ```
@@ -186,11 +196,15 @@ Now login to hive and create `/opt/apache-hive-4.0.1-bin/conf/hive-env.sh` from 
 su - hive;
 cp /opt/apache-hive-4.0.1-bin/conf/hive-env.sh.template /opt/apache-hive-4.0.1-bin/conf/hive-env.sh;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-env.sh;
+```
+```
 export HADOOP_HOME=/opt/hadoop-3.4.1
 ```
 Create `/opt/apache-hive-4.0.1-bin/conf/hive-site.xml` and set the configuration variables according to your environment.
 ```
 vi /opt/apache-hive-4.0.1-bin/conf/hive-site.xml;
+```
+```
 <configuration>
    <property>
       <name>javax.jdo.option.ConnectionURL</name>
@@ -241,6 +255,8 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-site.xml;
 Create `/opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml` for convenience. 
 ```
 vi /opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml;
+```
+```
 <configuration>
    <property>
       <name>beeline.hs2.connection.user</name>
@@ -256,18 +272,26 @@ Create the following three configuration files from `/opt/apache-hive-4.0.1-bin/
 ```
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties;
+```
+```
 # property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
-
+```
+```
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties;
+```
+```
 # property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
 # property.hive.log.file = hive.log
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 property.hive.log.file = hiveserver2.log
-
+```
+```
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties;
+```
+```
 # property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
 # property.hive.log.file = hive.log
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
@@ -277,6 +301,7 @@ Append the following to the end of `/opt/hadoop-3.4.1/etc/hadoop/core-site.xml` 
 ```
 su - hadoop;
 vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
+```
     <property>
         <name>hadoop.proxyuser.hive.hosts</name>
         <value>*</value>
@@ -285,6 +310,7 @@ vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
         <name>hadoop.proxyuser.hive.groups</name>
         <value>*</value>
     </property>
+```
 ```
 Initialize the Hive metastore schema using the following command.
 ```
