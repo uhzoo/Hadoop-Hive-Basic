@@ -146,8 +146,10 @@ postgresql-16-setup initdb
 To allow both local and remote connections to PostgreSQL, set listen_addresses to '*' from `/var/lib/pgsql/16/data/postgresql.conf` and update `/var/lib/pgsql/16/data/pg_hba.conf` as shown below.
 ```
 vi /var/lib/pgsql/16/data/postgresql.conf
+# listen_addresses = 'localhost'
 listen_addresses = '*'
 vi /var/lib/pgsql/16/data/pg_hba.conf
+# host    all             all             127.0.0.1/32            scram-sha-256
 host    all             all             ${YOUR_IP}/24            scram-sha-256
 ```
 Let’s start PostgreSQL 16 and connect to it.
@@ -245,16 +247,20 @@ Create the following three configuration files from /opt/apache-hive-4.0.1-bin/c
 ```
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties
 vi /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties
+# property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
-property.hive.log.file = hive.log
 
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties
 vi /opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties
+# property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
+# property.hive.log.file = hive.log
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 property.hive.log.file = hiveserver2.log
 
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties
 vi /opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties
+# property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
+# property.hive.log.file = hive.log
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 property.hive.log.file = metastore.log
 ```
