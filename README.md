@@ -199,6 +199,13 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-env.sh;
 ```
 ```
 export HADOOP_HOME=/opt/hadoop-3.4.1
+if [[ "$SERVICE" == "metastore" ]]; then
+   export HIVE_LOG4J_FILE=/opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties
+   export HADOOP_OPTS="$HADOOP_OPTS -Dlog4j2.configurationFile=$HIVE_LOG4J_FILE"
+elif [[ "$SERVICE" == "hiveserver2" ]]; then
+   export HIVE_LOG4J_FILE=/opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties
+   export HADOOP_OPTS="$HADOOP_OPTS -Dlog4j2.configurationFile=$HIVE_LOG4J_FILE"
+fi
 ```
 Create `/opt/apache-hive-4.0.1-bin/conf/hive-site.xml` and set the configuration variables according to your environment.
 ```
