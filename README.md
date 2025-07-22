@@ -60,7 +60,6 @@ Now we need to configure below files.
 
 `/opt/hadoop-3.4.1/etc/hadoop/core-site.xml`
 ```
-# core-site.xml
 <configuration>
     <property>
         <name>fs.defaultFS</name>
