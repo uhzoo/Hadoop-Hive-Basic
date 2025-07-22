@@ -422,15 +422,15 @@ vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
         <value>*</value>
     </property>
 ```
-And start hadoop. And Create the default warehouse directory for Hive.
+Now start hadoop, and Create the default directory for Hive.
 ```bash
 /opt/hadoop-3.4.1/sbin/start-all.sh;
 /opt/hadoop-3.4.1/bin/mapred --daemon start historyserver;
 /opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /user/hive/warehouse;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chmod 770 /user/hive/warehouse;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chown -R hive:hadoop /user/hive;
-/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /tmp
-/opt/hadoop-3.4.1/bin/hdfs dfs -chmod -R 1777 /tmp
+/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /tmp;
+/opt/hadoop-3.4.1/bin/hdfs dfs -chmod -R 1777 /tmp;
 ```
 ---
 Initialize the Hive metastore schema in the PostgreSQL database using the following command.
