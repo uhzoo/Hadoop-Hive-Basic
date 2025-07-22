@@ -9,7 +9,7 @@ Step-by-step guide for installing a basic Hadoop and Hive.
 |Hive MetaStore|Postgresql 16|
 
 ## Install Hadoop
-Before installing Hadoop, disable the firewall to allow cluster communication.
+Before installing Hadoop, disable the firewall to convenience.
 ```
 systemctl disable firewalld --now
 ```
