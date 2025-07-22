@@ -454,3 +454,7 @@ jps -m;
 27764 RunJar /opt/apache-hive-4.0.1-bin/lib/hive-service-4.0.1.jar org.apache.hive.service.server.HiveServer2
 27671 RunJar /opt/apache-hive-4.0.1-bin/lib/hive-metastore-4.0.1.jar org.apache.hadoop.hive.metastore.HiveMetaStore
 ```
+You can access the Web UIs for Hive service using the following URLs.
+| Service  | URL |
+| ------------- | ------------- |
+|HiveServer2|http://test.hadoop.com:10002|
