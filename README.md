@@ -285,7 +285,7 @@ nohup /opt/apache-hive-4.0.1-bin/bin/hiveserver2 > /dev/null 2>&1 &
 Create the default warehouse directory for Hive in HDFS
 ```
 su - hadoop
-hdfs dfs -mkdir -p /user/hive/warehouse
-hdfs dfs -chmod 770 /user/hive/warehouse
-hdfs dfs -chown -R hive:hadoop /user/hive
+/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /user/hive/warehouse
+/opt/hadoop-3.4.1/bin/hdfs dfs -chmod 770 /user/hive/warehouse
+/opt/hadoop-3.4.1/bin/hdfs dfs -chown -R hive:hadoop /user/hive
 ```
