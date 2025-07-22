@@ -178,6 +178,7 @@ chown -R hive. /opt/apache-hive-4.0.1-bin
 ```
 Now login to hive and create `/opt/apache-hive-4.0.1-bin/conf/hive-env.sh` from the template file `/opt/apache-hive-4.0.1-bin/conf/hive-env.sh.template`, and set the `HADOOP_HOME` variable.
 ```
+su - hive
 cp /opt/apache-hive-4.0.1-bin/conf/hive-env.sh.template /opt/apache-hive-4.0.1-bin/conf/hive-env.sh
 vi /opt/apache-hive-4.0.1-bin/conf/hive-env.sh
 export HADOOP_HOME=/opt/hadoop-3.4.1
