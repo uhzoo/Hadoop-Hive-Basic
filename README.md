@@ -147,19 +147,17 @@ To allow both local and remote connections to PostgreSQL, set listen_addresses t
 vi /var/lib/pgsql/16/data/postgresql.conf
 listen_addresses = '*'
 vi /var/lib/pgsql/16/data/pg_hba.conf
-local   all             all                                     trust
 host    all             all             ${YOUR_IP}/24            scram-sha-256
 ```
 Let’s start PostgreSQL 16 and connect to it.
 ```
 systemctl start postgresql-16
-psql -U postgres
+su - postgres -c "psql"
 ```
 Now let’s create the Hive database and user, and grant all privileges.
 ```
-CREATE DATABASE hive;
 CREATE USER hive WITH PASSWORD 'hive';
-GRANT ALL PRIVILEGES ON DATABASE hive TO hive;
+CREATE DATABASE hive OWNER hive;
 ```
 The Hive metastore is now ready to be installed.
 Let’s switch to the hadoop user and begin the Hive installation.
