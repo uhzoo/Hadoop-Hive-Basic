@@ -9,61 +9,65 @@ Step-by-step guide for installing a basic Hadoop and Hive.
 |Hive MetaStore|Postgresql 16|
 
 ## Install Hadoop
-Before installing Hadoop, disable the firewall to convenience.
-```
+Before installing Hadoop, disable the firewall for convenience.
+```bash
 systemctl disable firewalld --now;
 ```
-
-Hadoop requires Java (JDK 8), so install it first.
-```
+Hadoop requires Java (JDK 8), so you need to install it first.
+```bash
 dnf install java-1.8.0-*;
 ```
-In order to download and extract the installation file, we need to install wget and tar.
-```
+To download and extract the installation file, install wget and tar.
+```bash
 dnf install wget tar;
 ```
-Configure `/etc/hosts` to enable access to Hadoop using FQDN.
-```
+Configure `/etc/hosts` to allow Hadoop access using the fully qualified domain name (FQDN).
+```bash
 hostnamectl set-hostname test.hadoop.com;
 echo $(hostname -I | awk '{print $1}') $(hostname -f) >> /etc/hosts;
+```
 or
+```bash
 echo ${YOUR_IP} $(hostname -f) >> /etc/hosts;
 ```
-Add user hadoop and set password.
-```
+Add a user named hadoop and set its password (in this example, the password is also hadoop).
+```bash
 useradd hadoop;
 passwd hadoop;
 ```
-Download the Hadoop installation file and extract it. We will install it in the /opt directory.
-```
+Download Hadoop, extract it to `/opt`, and change the ownership to the hadoop user.
+```bash
 wget https://dlcdn.apache.org/hadoop/common/hadoop-3.4.1/hadoop-3.4.1.tar.gz;
 tar -zxf hadoop-3.4.1.tar.gz -C /opt;
 chown -R hadoop. /opt/hadoop-3.4.1;
 ```
 Now login to hadoop.
-```
+```bash
 su - hadoop;
 ```
-Useful commands like start-all.sh require passwordless SSH access, so we need to generate an SSH key and copy it to authorized hosts. When you run the following command `ssh-keygen -t rsa -m PEM
-` keep pressing Enter.
-```
+In order to use useful commands like `start-all.sh`, passwordless SSH access is required.
+Generate an SSH key and copy it to the authorized hosts.
+When prompted during `ssh-keygen`, simply press Enter to accept the defaults.
+```bash
 ssh-keygen -t rsa -m PEM;
 ssh-copy-id -i /home/hadoop/.ssh/id_rsa.pub $(hostname -f);
 ```
-Now we need to configure `HADOOP_HOME` and `JAVA_HOME` in `/opt/hadoop-3.4.1/etc/hadoop/hadoop-env.sh`
-You can find your `JAVA_HOME` path using the command: `readlink -f /usr/bin/java`
-```
+Now configure the `HADOOP_HOME` and `JAVA_HOME` environment variables in `/opt/hadoop-3.4.1/etc/hadoop/hadoop-env.sh`.
+You can determine your `JAVA_HOME` path with the following command: `readlink -f /usr/bin/java`
+```bash
 vi /opt/hadoop-3.4.1/etc/hadoop/hadoop-env.sh;
 ```
-```
+```text
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.462.b08-3.el9.x86_64/jre
 export HADOOP_HOME=/opt/hadoop-3.4.1
 ```
-Now we need to configure the following files.
-```
+Next, configure the following Hadoop XML files to set up the core components.
+Use vi (or your preferred editor) to modify each file as shown below.
+1. core-site.xml
+```bash
 vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
 ```
-```
+```xml
 <configuration>
     <property>
         <name>fs.defaultFS</name>
@@ -72,10 +76,11 @@ vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
     </property>
 </configuration>
 ```
-```
+2. hdfs-site.xml
+```bash
 vi /opt/hadoop-3.4.1/etc/hadoop/hdfs-site.xml;
 ```
-```
+```xml
 <configuration>
     <property>
         <name>dfs.replication</name>
@@ -84,10 +89,11 @@ vi /opt/hadoop-3.4.1/etc/hadoop/hdfs-site.xml;
     </property>
 </configuration>
 ```
-```
+3. yarn-site.xml
+```bash
 vi /opt/hadoop-3.4.1/etc/hadoop/yarn-site.xml;
 ```
-```
+```xml
 <configuration>
     <property>
         <name>yarn.nodemanager.aux-services</name>
@@ -101,10 +107,11 @@ vi /opt/hadoop-3.4.1/etc/hadoop/yarn-site.xml;
     </property>
 </configuration>
 ```
-```
+4. mapred-site.xml
+```bash
 vi /opt/hadoop-3.4.1/etc/hadoop/mapred-site.xml;
 ```
-```
+```xml
 <configuration>
     <property>
         <name>mapreduce.framework.name</name>
@@ -118,19 +125,19 @@ vi /opt/hadoop-3.4.1/etc/hadoop/mapred-site.xml;
     </property>
 </configuration>
 ```
-Now that the basic configuration is complete, let’s format the NameNode.
-```
+Now that the basic configuration is complete, format the NameNode to initialize the HDFS filesystem.
+```bash
 /opt/hadoop-3.4.1/bin/hdfs namenode -format;
 ```
-Now lets start all services.
-```
+Now let’s start all Hadoop services.
+```bash
 /opt/hadoop-3.4.1/sbin/start-all.sh;
 ```
-If you see the following output from `jps -m`, it means the setup was successful.
-```
+If you see the following output from `jps -m`, it indicates that Hadoop services are running correctly.
+```bash
 jps -m;
 ```
-```
+```text
 16098 ResourceManager
 16210 NodeManager
 15559 NameNode
@@ -138,66 +145,78 @@ jps -m;
 16556 Jps -m
 15902 SecondaryNameNode
 ```
-Now shutdown all services.
-```
+Now stop all Hadoop services before proceeding with the Hive installation.
+```bash
 /opt/hadoop-3.4.1/sbin/stop-all.sh;
 ```
+---
 ## Install Hive
-Now we’re going to install Hive and set up PostgreSQL 16 as its metastore database.
-Follow the commands below to install PostgreSQL 16 using dnf.
+In this step, we’ll install Hive and configure PostgreSQL 16 as its metastore database.
+Use the following commands to install PostgreSQL 16 on your system via dnf.
+```bash
+dnf install https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm;
+dnf install https://rpmfind.net/linux/centos-stream/9-stream/CRB/x86_64/os/Packages/perl-IO-Tty-1.16-4.el9.x86_64.rpm;
+dnf install https://rpmfind.net/linux/centos-stream/9-stream/CRB/aarch64/os/Packages/perl-IPC-Run-20200505.0-6.el9.noarch.rpm;
+dnf install postgresql16 postgresql16-devel postgresql16-server;
 ```
-dnf -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm;
-dnf -y install https://rpmfind.net/linux/centos-stream/9-stream/CRB/x86_64/os/Packages/perl-IO-Tty-1.16-4.el9.x86_64.rpm;
-dnf -y install https://rpmfind.net/linux/centos-stream/9-stream/CRB/aarch64/os/Packages/perl-IPC-Run-20200505.0-6.el9.noarch.rpm;
-dnf -y install postgresql16 postgresql16-devel postgresql16-server;
-```
-In order to start PostgreSQL 16, we need to initialize the database first.
-```
+PostgreSQL 16 requires an initial database setup before it can be started.
+```bash
 postgresql-16-setup initdb;
 ```
-To allow both local and remote connections to PostgreSQL, set listen_addresses to '*' from `/var/lib/pgsql/16/data/postgresql.conf` and update `/var/lib/pgsql/16/data/pg_hba.conf` as shown below.
-```
+To allow both local and remote connections to PostgreSQL, set listen_addresses to '*' in /var/lib/pgsql/16/data/postgresql.conf, and modify /var/lib/pgsql/16/data/pg_hba.conf to allow remote client access.
+```bash
 vi /var/lib/pgsql/16/data/postgresql.conf;
 ```
-```
+```text
 # listen_addresses = 'localhost'
 listen_addresses = '*'
 ```
+This change allows PostgreSQL to accept connections from all IP addresses.
+```bash
 vi /var/lib/pgsql/16/data/pg_hba.conf;
 ```
+```text
 # host    all             all             127.0.0.1/32            scram-sha-256
 host    all             all             ${YOUR_IP}/24            scram-sha-256
 ```
+This rule allows clients in the ${YOUR_IP}/24 subnet to connect to any database as any user using scram-sha-256 authentication.
+
 Let’s start PostgreSQL 16 and connect to it.
-```
+```bash
 systemctl start postgresql-16;
 su - postgres -c "psql";
 ```
 Now let’s create the Hive user and database.
-```
+```sql
 CREATE USER hive WITH PASSWORD 'hive';
 CREATE DATABASE hive OWNER hive;
 \q;
 ```
 The Hive metastore is now ready to be installed.
-Let’s create the hive user and add it to the hadoop group.
-Download and extract the Hive installation file along with the PostgreSQL JDBC driver (postgres.jar).
-Install them under /opt, and move the JDBC driver into Hive’s lib directory.
-```
+Let’s create the hive user and add it to the hadoop group
+```bash
 useradd -G hadoop hive;
+```
+Download Hive and the PostgreSQL JDBC driver
+```bash
 wget https://dlcdn.apache.org/hive/hive-4.0.1/apache-hive-4.0.1-bin.tar.gz;
 wget https://repo1.maven.org/maven2/org/postgresql/postgresql/42.5.4/postgresql-42.5.4.jar;
+```
+Extract Hive to the `/opt` directory, and move the JDBC driver into Hive’s lib directory so it can connect to the PostgreSQL metastore.
+```bash
 tar -zxf apache-hive-4.0.1-bin.tar.gz -C /opt;
 mv postgresql-42.5.4.jar /opt/apache-hive-4.0.1-bin/lib;
 chown -R hive. /opt/apache-hive-4.0.1-bin;
 ```
-Now login to hive and create `/opt/apache-hive-4.0.1-bin/conf/hive-env.sh` from the template file `/opt/apache-hive-4.0.1-bin/conf/hive-env.sh.template`, and set the `HADOOP_HOME` variable.
-```
+Now log in as the hive user, create the `hive-env.sh` file from the provided template, and configure the `HADOOP_HOME` environment variable.
+Also, set conditional logging configuration for the metastore and HiveServer2 based on the service type.
+```bash
 su - hive;
 cp /opt/apache-hive-4.0.1-bin/conf/hive-env.sh.template /opt/apache-hive-4.0.1-bin/conf/hive-env.sh;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-env.sh;
 ```
-```
+```text
+# HADOOP_HOME=${bin}/../../hadoop
 export HADOOP_HOME=/opt/hadoop-3.4.1
 if [[ "$SERVICE" == "metastore" ]]; then
    export HIVE_LOG4J_FILE=/opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties
@@ -208,10 +227,10 @@ elif [[ "$SERVICE" == "hiveserver2" ]]; then
 fi
 ```
 Create `/opt/apache-hive-4.0.1-bin/conf/hive-site.xml` and set the configuration variables according to your environment.
-```
+```bash
 vi /opt/apache-hive-4.0.1-bin/conf/hive-site.xml;
 ```
-```
+```xml
 <configuration>
    <property>
       <name>javax.jdo.option.ConnectionURL</name>
@@ -259,11 +278,11 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-site.xml;
    </property>
 </configuration>
 ```
-Create `/opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml` for convenience. 
-```
+For convenience, create `/opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml` to preconfigure Beeline login credentials.
+```bash
 vi /opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml;
 ```
-```
+```xml
 <configuration>
    <property>
       <name>beeline.hs2.connection.user</name>
@@ -275,41 +294,42 @@ vi /opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml;
    </property>
 </configuration>
 ```
-Create the following three configuration files from `/opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template` for logging purposes, and update each file with the corresponding log directory and file name.
-```
+Create the following three configuration files from `/opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template` for logging purposes. For each file, update the log directory and file name appropriately.
+```bash
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties;
 ```
-```
+```text
 # property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 ```
-```
+```bash
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties;
 ```
-```
+```text
 # property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
 # property.hive.log.file = hive.log
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 property.hive.log.file = hiveserver2.log
 ```
-```
+```bash
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties;
 ```
-```
+```text
 # property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
 # property.hive.log.file = hive.log
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 property.hive.log.file = metastore.log
 ```
-Append the following to the end of `/opt/hadoop-3.4.1/etc/hadoop/core-site.xml` as user hadoop.
-```
+---
+Append the following to the end of `/opt/hadoop-3.4.1/etc/hadoop/core-site.xml` as user hadoop. 
+```bash
 su - hadoop;
 vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
 ```
-```
+```xml
     <property>
         <name>hadoop.proxyuser.hive.hosts</name>
         <value>*</value>
@@ -319,28 +339,32 @@ vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
         <value>*</value>
     </property>
 ```
-Initialize the Hive metastore schema using the following command.
-```
-/opt/apache-hive-4.0.1-bin/bin/schematool -dbType postgres -initSchema;
-```
-Start hadoop as user hadoop.
-```
-su - hadoop;
+And start hadoop. And Create the default warehouse directory for Hive.
+```bash
 /opt/hadoop-3.4.1/sbin/start-all.sh;
-```
-Start the Hive Metastore in background.
-```
-nohup /opt/apache-hive-4.0.1-bin/bin/hive --service metastore > /dev/null 2>&1 &
-```
-Start the Hiveserver2 in background.
-
-```
-nohup /opt/apache-hive-4.0.1-bin/bin/hiveserver2 > /dev/null 2>&1 &
-```
-Create the default warehouse directory for Hive in HDFS as user hadoop.
-```
-su - hadoop;
 /opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /user/hive/warehouse;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chmod 770 /user/hive/warehouse;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chown -R hive:hadoop /user/hive;
+```
+---
+Initialize the Hive metastore schema in the PostgreSQL database using the following command.
+```bash
+/opt/apache-hive-4.0.1-bin/bin/schematool -dbType postgres -initSchema;
+```
+Start the Hive Metastore in the background using nohup so it continues running after you log out.
+```bash
+nohup /opt/apache-hive-4.0.1-bin/bin/hive --service metastore > /dev/null 2>&1 &
+```
+Start HiveServer2 in the background using nohup so it keeps running after logout.
+```bash
+nohup /opt/apache-hive-4.0.1-bin/bin/hiveserver2 > /dev/null 2>&1 &
+```
+If you see the following output from `jps -m`, it means that the Hive Metastore and HiveServer2 are running properly.
+```bash
+jps -m;
+```
+```text
+29139 Jps -m
+27764 RunJar /opt/apache-hive-4.0.1-bin/lib/hive-service-4.0.1.jar org.apache.hive.service.server.HiveServer2
+27671 RunJar /opt/apache-hive-4.0.1-bin/lib/hive-metastore-4.0.1.jar org.apache.hadoop.hive.metastore.HiveMetaStore
 ```
