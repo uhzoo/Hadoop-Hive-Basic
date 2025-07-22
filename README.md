@@ -8,12 +8,12 @@ Step-by-step guide for installing a basic Hadoop and Hive.
 |Hive|4.0.1|
 |Hive MetaStore|PostgreSQL 16|
 
-The following guide uses `test.hadoop.com` in example URLs.
-To use the same, update your hosts file with your server IP:
+The following guide uses `test.hadoop.com` in example URLs.  
+To use them as-is, update your hosts file to map `test.hadoop.com` to your server’s IP address.
 - Windows: `C:\Windows\System32\drivers\etc\hosts`
 - Mac/Linux: `/etc/hosts`
   
-If you prefer, you can access services directly using `${YOUR_IP}:port` instead.
+Alternatively, you can access services directly using ${YOUR_IP}:${PORT}.
 
 ## Install Hadoop
 Before installing Hadoop, disable the firewall for convenience.
@@ -57,15 +57,12 @@ Now login to hadoop.
 ```bash
 su - hadoop;
 ```
-In order to use useful commands like `start-all.sh`, passwordless SSH access is required.
-Generate an SSH key and copy it to the authorized hosts.
-When prompted during `ssh-keygen`, simply press Enter to accept the defaults.
+In order to use useful commands like `start-all.sh`, passwordless SSH access is required. Generate an SSH key and copy it to the authorized hosts. When prompted during `ssh-keygen`, simply press Enter to accept the defaults.
 ```bash
 ssh-keygen -t rsa -m PEM;
 ssh-copy-id -i /home/hadoop/.ssh/id_rsa.pub $(hostname -f);
 ```
-Now configure the `HADOOP_HOME` and `JAVA_HOME` environment variables in `/opt/hadoop-3.4.1/etc/hadoop/hadoop-env.sh`.
-You can determine your `JAVA_HOME` path with the following command: `readlink -f /usr/bin/java`
+Now configure the `HADOOP_HOME` and `JAVA_HOME` environment variables in `/opt/hadoop-3.4.1/etc/hadoop/hadoop-env.sh`. You can determine your `JAVA_HOME` path with the following command: `readlink -f /usr/bin/java`
 ```bash
 vi /opt/hadoop-3.4.1/etc/hadoop/hadoop-env.sh;
 ```
@@ -245,8 +242,7 @@ Now stop all Hadoop services before proceeding with the Hive installation.
 ```
 ---
 ## Install Hive
-In this step, we’ll install Hive and configure PostgreSQL 16 as its metastore database.
-Use the following commands to install PostgreSQL 16 on your system via dnf.
+In this step, we’ll install Hive and configure PostgreSQL 16 as its metastore database. Use the following commands to install PostgreSQL 16 on your system via dnf.
 ```bash
 dnf install https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm;
 dnf install https://rpmfind.net/linux/centos-stream/9-stream/CRB/x86_64/os/Packages/perl-IO-Tty-1.16-4.el9.x86_64.rpm;
@@ -286,8 +282,7 @@ CREATE USER hive WITH PASSWORD 'hive';
 CREATE DATABASE hive OWNER hive;
 \q
 ```
-The Hive metastore is now ready to be installed.
-Let’s create the hive user and add it to the hadoop group
+The Hive metastore is now ready to be installed. Let’s create the hive user and add it to the hadoop group
 ```bash
 useradd -G hadoop hive;
 ```
@@ -302,8 +297,7 @@ tar -zxf apache-hive-4.0.1-bin.tar.gz -C /opt;
 mv postgresql-42.5.4.jar /opt/apache-hive-4.0.1-bin/lib;
 chown -R hive. /opt/apache-hive-4.0.1-bin;
 ```
-Now log in as the hive user, create the `hive-env.sh` file from the provided template, and configure the `HADOOP_HOME` environment variable.
-Also, set conditional logging configuration for the metastore and HiveServer2 based on the service type.
+Now log in as the hive user, create the `hive-env.sh` file from the provided template, and configure the `HADOOP_HOME` environment variable. Also, set conditional logging configuration for the metastore and HiveServer2 based on the service type.
 ```bash
 su - hive;
 cp /opt/apache-hive-4.0.1-bin/conf/hive-env.sh.template /opt/apache-hive-4.0.1-bin/conf/hive-env.sh;
@@ -355,22 +349,35 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-site.xml;
     <property>
         <name>hive.metastore.warehouse.dir</name>
         <value>/user/hive/warehouse</value>
+        <description>location of default database for the warehouse</description>
     </property>
     <property>
         <name>hive.server2.enable.doAs</name>
         <value>true</value>
-    </property>
-    <property>
-        <name>hive.metastore.uris</name>
-        <value>thrift://test.hadoop.com:9083</value>
+        <description>
+          Setting this property to true will have HiveServer2 execute
+          Hive operations as the user making the calls to it.
+        </description>
     </property>
     <property>
         <name>hive.server2.webui.host</name>
         <value>test.hadoop.com</value>
+        <description>The host address the HiveServer2 WebUI will listen on</description>
     </property>
     <property>
         <name>hive.server2.webui.port</name>
         <value>10002</value>
+        <description>The port the HiveServer2 WebUI will listen on. This can beset to 0 or a negative integer to disable the web UI</description>
+    </property>
+    <property>
+        <name>hive.server2.thrift.bind.host</name>
+        <value>0.0.0.0</value>
+        <description>Bind host on which to run the HiveServer2 Thrift service.</description>
+    </property>
+    <property>
+        <name>hive.server2.thrift.port</name>
+        <value>10000</value>
+        <description>Port number of HiveServer2 Thrift interface when hive.server2.transport.mode is 'binary'.</description>
     </property>
 </configuration>
 ```
@@ -482,3 +489,6 @@ You can access the Web UI for Hive service using the following URLs.
 | Service  | URL |
 | ------------- | ------------- |
 |HiveServer2|http://test.hadoop.com:10002|
+
+
+
