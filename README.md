@@ -148,6 +148,7 @@ To allow both local and remote connections to PostgreSQL, set listen_addresses t
 vi /var/lib/pgsql/16/data/postgresql.conf
 # listen_addresses = 'localhost'
 listen_addresses = '*'
+
 vi /var/lib/pgsql/16/data/pg_hba.conf
 # host    all             all             127.0.0.1/32            scram-sha-256
 host    all             all             ${YOUR_IP}/24            scram-sha-256
