@@ -221,8 +221,8 @@ You can access the Web UIs of each Hadoop service using the following URLs.
 
 Now stop all Hadoop services before proceeding with the Hive installation.
 ```bash
-/opt/hadoop-3.4.1/sbin/stop-all.sh;
 /opt/hadoop-3.4.1/bin/mapred --daemon stop historyserver;
+/opt/hadoop-3.4.1/sbin/stop-all.sh;
 ```
 ---
 ## Install Hive
@@ -353,19 +353,11 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-site.xml;
     </property>
     <property>
         <name>hive.server2.webui.host</name>
-        <value>0.0.0.0</value>
+        <value>test.hadoop.com</value>
     </property>
     <property>
         <name>hive.server2.webui.port</name>
         <value>10002</value>
-    </property>
-    <property>
-        <name>hive.server2.webui.use.ssl</name>
-        <value>false</value>
-    </property>
-    <property>
-        <name>hive.server2.thrift.http.port</name>
-        <value>10001</value> <!-- Optional: Beeline HS2 Web UI -->
     </property>
 </configuration>
 ```
@@ -433,9 +425,12 @@ vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
 And start hadoop. And Create the default warehouse directory for Hive.
 ```bash
 /opt/hadoop-3.4.1/sbin/start-all.sh;
+/opt/hadoop-3.4.1/bin/mapred --daemon start historyserver;
 /opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /user/hive/warehouse;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chmod 770 /user/hive/warehouse;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chown -R hive:hadoop /user/hive;
+/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /tmp
+/opt/hadoop-3.4.1/bin/hdfs dfs -chmod -R 1777 /tmp
 ```
 ---
 Initialize the Hive metastore schema in the PostgreSQL database using the following command.
