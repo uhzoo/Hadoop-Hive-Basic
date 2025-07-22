@@ -273,8 +273,9 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties;
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 property.hive.log.file = metastore.log
 ```
-Append the following to the end of `/opt/hadoop-3.4.1/etc/hadoop/core-site.xml`
+Append the following to the end of `/opt/hadoop-3.4.1/etc/hadoop/core-site.xml` as user hadoop.
 ```
+su - hadoop;
 vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
     <property>
         <name>hadoop.proxyuser.hive.hosts</name>
@@ -289,16 +290,17 @@ Initialize the Hive metastore schema using the following command.
 ```
 /opt/apache-hive-4.0.1-bin/bin/schematool -dbType postgres -initSchema;
 ```
-Start hadoop.
+Start hadoop as user hadoop.
 ```
-/opt/hadoop-3.4.1/sbin/start-all.sh
+su - hadoop;
+/opt/hadoop-3.4.1/sbin/start-all.sh;
 ```
 Start the Hive Metastore and HiveServer2 in the background.
 ```
 nohup /opt/apache-hive-4.0.1-bin/bin/hive --service metastore > /dev/null 2>&1 &;
 nohup /opt/apache-hive-4.0.1-bin/bin/hiveserver2 > /dev/null 2>&1 &;
 ```
-Create the default warehouse directory for Hive in HDFS
+Create the default warehouse directory for Hive in HDFS as user hadoop.
 ```
 su - hadoop;
 /opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /user/hive/warehouse;
