@@ -110,7 +110,7 @@ vi /opt/hadoop-3.4.1/etc/hadoop/hdfs-site.xml;
     <property>
         <name>dfs.namenode.name.dir</name>
         <value>file:/data/namenode</value>
-        <description>	Determines where on the local filesystem the DFS name node should store the name table(fsimage). If this is a comma-delimited list of directories then the name table is replicated in all of the directories, for redundancy.</description>
+        <description>Determines where on the local filesystem the DFS name node should store the name table(fsimage). If this is a comma-delimited list of directories then the name table is replicated in all of the directories, for redundancy.</description>
     </property>
     <property>
         <name>dfs.datanode.data.dir</name>
@@ -120,7 +120,7 @@ vi /opt/hadoop-3.4.1/etc/hadoop/hdfs-site.xml;
     <property>
         <name>dfs.replication</name>
         <value>1</value>
-        <description>	Default block replication. The actual number of replications can be specified when the file is created. The default is used if replication is not specified in create time.</description>
+        <description>Default block replication. The actual number of replications can be specified when the file is created. The default is used if replication is not specified in create time.</description>
     </property>
 </configuration>
 ```
@@ -390,10 +390,12 @@ vi /opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml;
     <property>
         <name>beeline.hs2.connection.user</name>
         <value>hive</value>
+        <description></description>
     </property>
     <property>
         <name>beeline.hs2.connection.password</name>
         <value>hive</value>
+        <description></description>
     </property>
 </configuration>
 ```
@@ -447,10 +449,12 @@ vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
     <property>
         <name>hadoop.proxyuser.hive.hosts</name>
         <value>*</value>
+        <description></description>
     </property>
     <property>
         <name>hadoop.proxyuser.hive.groups</name>
         <value>*</value>
+        <description></description>
     </property>
 ```
 Now start hadoop, and Create the default directory for Hive.
