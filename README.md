@@ -309,6 +309,7 @@ Append the following to the end of `/opt/hadoop-3.4.1/etc/hadoop/core-site.xml` 
 su - hadoop;
 vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
 ```
+```
     <property>
         <name>hadoop.proxyuser.hive.hosts</name>
         <value>*</value>
@@ -317,7 +318,6 @@ vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
         <name>hadoop.proxyuser.hive.groups</name>
         <value>*</value>
     </property>
-```
 ```
 Initialize the Hive metastore schema using the following command.
 ```
