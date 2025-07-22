@@ -5,7 +5,7 @@ Step-by-step guide for installing a basic Hadoop and Hive.
 | ------------- | ------------- |
 |OS|Rocky Linux 9.4 Minimal, 4 vCPUs, 8 GB RAM|
 |Hadoop|3.4.1|
-|Hive|4.0.1
+|Hive|4.0.1|
 |Hive MetaStore|Postgresql 16|
 
 ## Install Hadoop
@@ -41,6 +41,11 @@ wget https://dlcdn.apache.org/hadoop/common/hadoop-3.4.1/hadoop-3.4.1.tar.gz;
 tar -zxf hadoop-3.4.1.tar.gz -C /opt;
 chown -R hadoop. /opt/hadoop-3.4.1;
 ```
+We will store all Hadoop-related data under /data, so let's create the directory and give ownership to the hadoop user.
+```bash
+mkdir -p /data;
+chown -R hadoop. /data;
+```
 Now login to hadoop.
 ```bash
 su - hadoop;
@@ -58,7 +63,9 @@ You can determine your `JAVA_HOME` path with the following command: `readlink -f
 vi /opt/hadoop-3.4.1/etc/hadoop/hadoop-env.sh;
 ```
 ```text
+# export JAVA_HOME=
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.462.b08-3.el9.x86_64/jre
+# export HADOOP_HOME=
 export HADOOP_HOME=/opt/hadoop-3.4.1
 ```
 Next, configure the following Hadoop XML files to set up the core components.
@@ -83,6 +90,26 @@ vi /opt/hadoop-3.4.1/etc/hadoop/hdfs-site.xml;
 ```xml
 <configuration>
     <property>
+        <name>dfs.namenode.http-address</name>
+        <value>test.hadoop.com:9870</value>
+    </property>
+    <property>
+        <name>dfs.secondary.http.address</name>
+        <value>test.hadoop.com:9868</value>
+    </property>
+    <property>
+        <name>dfs.datanode.http.address</name>
+        <value>test.hadoop.com:9864</value>
+    </property>
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:/data/namenode</value>
+    </property>
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:/data/datanode</value>
+    </property>
+    <property>
         <name>dfs.replication</name>
         <value>1</value>
         <description>The default number of data block replications. Set to 1 for single-node or test environments.</description>
@@ -95,6 +122,22 @@ vi /opt/hadoop-3.4.1/etc/hadoop/yarn-site.xml;
 ```
 ```xml
 <configuration>
+    <property>
+        <name>yarn.resourcemanager.webapp.address</name>
+        <value>test.hadoop.com:8088</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.webapp.address</name>
+        <value>test.hadoop.com:8042</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.local-dirs</name>
+        <value>/data/yarn/local</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.log-dirs</name>
+        <value>/data/yarn/logs</value>
+    </property>
     <property>
         <name>yarn.nodemanager.aux-services</name>
         <value>mapreduce_shuffle</value>
@@ -113,6 +156,22 @@ vi /opt/hadoop-3.4.1/etc/hadoop/mapred-site.xml;
 ```
 ```xml
 <configuration>
+    <property>
+        <name>mapreduce.jobhistory.address</name>
+        <value>test.hadoop.com:10020</value>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.webapp.address</name>
+        <value>test.hadoop.com:19888</value>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.done-dir</name>
+        <value>/mr-history/done</value>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.intermediate-done-dir</name>
+        <value>/mr-history/tmp</value>
+    </property>
     <property>
         <name>mapreduce.framework.name</name>
         <value>yarn</value>
@@ -133,21 +192,37 @@ Now let’s start all Hadoop services.
 ```bash
 /opt/hadoop-3.4.1/sbin/start-all.sh;
 ```
+The MapReduce JobHistory Server is not started or stoped automatically, so we need to start it manually.
+```bash
+/opt/hadoop-3.4.1/bin/mapred --daemon start historyserver;
+```
 If you see the following output from `jps -m`, it indicates that Hadoop services are running correctly.
 ```bash
 jps -m;
 ```
 ```text
-16098 ResourceManager
-16210 NodeManager
-15559 NameNode
-15720 DataNode
-16556 Jps -m
-15902 SecondaryNameNode
+9729 ResourceManager
+9320 DataNode
+10328 Jps -m
+9132 NameNode
+9853 NodeManager
+10285 JobHistoryServer
+9518 SecondaryNameNode
 ```
+You can access the Web UIs of each Hadoop service using the following URLs.
+| Service  | URL |
+| ------------- | ------------- |
+|NameNode|http://test.hadoop.com:9870|
+|DataNode|http://test.hadoop.com:9864|
+|SecondaryNameNode|http://test.hadoop.com:9868|
+|ResourceManager|http://test.hadoop.com:8088|
+|NodeManager|http://test.hadoop.com:8042|
+|JobHistoryServer|http://test.hadoop.com:19888|
+
 Now stop all Hadoop services before proceeding with the Hive installation.
 ```bash
 /opt/hadoop-3.4.1/sbin/stop-all.sh;
+/opt/hadoop-3.4.1/bin/mapred --daemon stop historyserver;
 ```
 ---
 ## Install Hive
