@@ -176,7 +176,7 @@ tar -zxf apache-hive-4.0.1-bin.tar.gz -C /opt
 mv postgresql-42.5.4.jar /opt/apache-hive-4.0.1-bin/lib
 chown -R hive. /opt/apache-hive-4.0.1-bin
 ```
-Create `/opt/apache-hive-4.0.1-bin/conf/hive-env.sh` from the template file `/opt/apache-hive-4.0.1-bin/conf/hive-env.sh.template`, and set the `HADOOP_HOME` variable.
+Now login to hive and create `/opt/apache-hive-4.0.1-bin/conf/hive-env.sh` from the template file `/opt/apache-hive-4.0.1-bin/conf/hive-env.sh.template`, and set the `HADOOP_HOME` variable.
 ```
 cp /opt/apache-hive-4.0.1-bin/conf/hive-env.sh.template /opt/apache-hive-4.0.1-bin/conf/hive-env.sh
 vi /opt/apache-hive-4.0.1-bin/conf/hive-env.sh
