@@ -9,6 +9,11 @@ Step-by-step guide for installing a basic Hadoop and Hive.
 |Hive MetaStore|Postgresql 16|
 
 ## Install Hadoop
+Before installing Hadoop, disable the firewall to allow cluster communication.
+```
+systemctl disable firewalld --now
+```
+
 Hadoop requires Java (JDK 8), so install it first.
 ```
 dnf install java-1.8.0-*
@@ -21,6 +26,8 @@ Configure `/etc/hosts` to enable access to Hadoop using FQDN.
 ```
 hostnamectl set-hostname test.hadoop.com
 echo $(hostname -I | awk '{print $1}') $(hostname -f) >> /etc/hosts
+or
+echo ${YOUR_IP} $(hostname -f) >> /etc/hosts
 ```
 Add user hadoop and set password.
 ```
@@ -141,7 +148,7 @@ vi /var/lib/pgsql/16/data/postgresql.conf
 listen_addresses = '*'
 vi /var/lib/pgsql/16/data/pg_hba.conf
 local   all             all                                     trust
-host    all             all             your_ip/24            scram-sha-256
+host    all             all             ${YOUR_IP}/24            scram-sha-256
 ```
 Let’s start PostgreSQL 16 and connect to it.
 ```
