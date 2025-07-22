@@ -6,7 +6,14 @@ Step-by-step guide for installing a basic Hadoop and Hive.
 |OS|Rocky Linux 9.4 Minimal, 4 vCPUs, 8 GB RAM|
 |Hadoop|3.4.1|
 |Hive|4.0.1|
-|Hive MetaStore|Postgresql 16|
+|Hive MetaStore|PostgreSQL 16|
+
+The following guide uses test.hadoop.com in example URLs.
+To use the same, update your hosts file with your server IP:
+- Windows: C:\Windows\System32\drivers\etc\hosts
+- Mac/Linux: /etc/hosts
+  
+If you prefer, you can access services directly using ${YOUR_IP}:port instead.
 
 ## Install Hadoop
 Before installing Hadoop, disable the firewall for convenience.
@@ -17,7 +24,7 @@ Hadoop requires Java (JDK 8), so you need to install it first.
 ```bash
 dnf install java-1.8.0-*;
 ```
-To download and extract the installation file, install wget and tar.
+To download and extract the installation file, install `wget` and `tar`.
 ```bash
 dnf install wget tar;
 ```
@@ -69,7 +76,6 @@ export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.462.b08-3.el9.x86_64/jre
 export HADOOP_HOME=/opt/hadoop-3.4.1
 ```
 Next, configure the following Hadoop XML files to set up the core components.
-Use vi (or your preferred editor) to modify each file as shown below.
 1. core-site.xml
 ```bash
 vi /opt/hadoop-3.4.1/etc/hadoop/core-site.xml;
@@ -238,7 +244,7 @@ PostgreSQL 16 requires an initial database setup before it can be started.
 ```bash
 postgresql-16-setup initdb;
 ```
-To allow both local and remote connections to PostgreSQL, set listen_addresses to '*' in /var/lib/pgsql/16/data/postgresql.conf, and modify /var/lib/pgsql/16/data/pg_hba.conf to allow remote client access.
+To allow both local and remote connections to PostgreSQL, set listen_addresses to '*' in `/var/lib/pgsql/16/data/postgresql.conf`, and modify `/var/lib/pgsql/16/data/pg_hba.conf` to allow remote client access.
 ```bash
 vi /var/lib/pgsql/16/data/postgresql.conf;
 ```
@@ -254,7 +260,7 @@ vi /var/lib/pgsql/16/data/pg_hba.conf;
 # host    all             all             127.0.0.1/32            scram-sha-256
 host    all             all             ${YOUR_IP}/24            scram-sha-256
 ```
-This rule allows clients in the ${YOUR_IP}/24 subnet to connect to any database as any user using scram-sha-256 authentication.
+This rule allows clients in the `${YOUR_IP}/24` subnet to connect to any database as any user using scram-sha-256 authentication.
 
 Let’s start PostgreSQL 16 and connect to it.
 ```bash
@@ -378,6 +384,7 @@ vi /opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml;
 </configuration>
 ```
 Create the following three configuration files from `/opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template` for logging purposes. For each file, update the log directory and file name appropriately.
+1. hive-log4j2.properties
 ```bash
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties;
@@ -386,6 +393,7 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties;
 # property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 ```
+2. hive-server2-log4j2.properties
 ```bash
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties;
@@ -396,6 +404,7 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties;
 property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 property.hive.log.file = hiveserver2.log
 ```
+3. hive-metastore-log4j2.properties
 ```bash
 cp /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties.template /opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties;
 vi /opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties;
@@ -454,7 +463,7 @@ jps -m;
 27764 RunJar /opt/apache-hive-4.0.1-bin/lib/hive-service-4.0.1.jar org.apache.hive.service.server.HiveServer2
 27671 RunJar /opt/apache-hive-4.0.1-bin/lib/hive-metastore-4.0.1.jar org.apache.hadoop.hive.metastore.HiveMetaStore
 ```
-You can access the Web UIs for Hive service using the following URLs.
+You can access the Web UI for Hive service using the following URLs.
 | Service  | URL |
 | ------------- | ------------- |
 |HiveServer2|http://test.hadoop.com:10002|
