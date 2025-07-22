@@ -321,10 +321,14 @@ Start hadoop as user hadoop.
 su - hadoop;
 /opt/hadoop-3.4.1/sbin/start-all.sh;
 ```
-Start the Hive Metastore and HiveServer2 in the background.
+Start the Hive Metastore in background.
 ```
-nohup /opt/apache-hive-4.0.1-bin/bin/hive --service metastore > /dev/null 2>&1 &;
-nohup /opt/apache-hive-4.0.1-bin/bin/hiveserver2 > /dev/null 2>&1 &;
+nohup /opt/apache-hive-4.0.1-bin/bin/hive --service metastore > /dev/null 2>&1 &
+```
+Start the Hiveserver2 in background.
+
+```
+nohup /opt/apache-hive-4.0.1-bin/bin/hiveserver2 > /dev/null 2>&1 &
 ```
 Create the default warehouse directory for Hive in HDFS as user hadoop.
 ```
