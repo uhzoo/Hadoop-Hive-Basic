@@ -13,7 +13,7 @@ To use them as-is, update your hosts file to map `test.hadoop.com` to your serve
 - Windows: `C:\Windows\System32\drivers\etc\hosts`
 - Mac/Linux: `/etc/hosts`
   
-Alternatively, you can access services directly using `${YOUR_IP}:${PORT}`.
+Alternatively, you can access services directly using `YOUR_IP:PORT`.
 
 ## Install Hadoop
 Before installing Hadoop, disable the firewall for convenience.
@@ -35,7 +35,7 @@ echo $(hostname -I | awk '{print $1}') $(hostname -f) >> /etc/hosts;
 ```
 or
 ```bash
-echo ${YOUR_IP} $(hostname -f) >> /etc/hosts;
+echo YOUR_IP $(hostname -f) >> /etc/hosts;
 ```
 Add a user named hadoop and set its password (in this example, the password is also hadoop).
 ```bash
@@ -326,7 +326,7 @@ vi /var/lib/pgsql/16/data/pg_hba.conf;
 ```
 ```text
 # host    all             all             127.0.0.1/32            scram-sha-256
-host    all             all             ${YOUR_IP}/24            scram-sha-256
+host    all             all             YOUR_IP/24            scram-sha-256
 ```
 This rule allows clients in the `${YOUR_IP}/24` subnet to connect to any database as any user using scram-sha-256 authentication.
 
@@ -573,6 +573,8 @@ su - hadoop;
 
 # Run WordCount job on the generated random text data
 /opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar wordcount /tmp/randomtextwriter.dat /tmp/wordcount.dat
+
+/opt/hadoop-3.4.1/bin/hadoop dfs -ls /tmp
 ```
 ## Simple Hive Test.
 ```bash
@@ -588,6 +590,8 @@ tail -n +2 titanic.csv > titanic_noheader.csv;
 
 # Upload Titanic CSV (no header) to HDFS
 /opt/hadoop-3.4.1/bin/hdfs dfs -put -f titanic_noheader.csv /tmp/ext_titanic/titanic_noheader.csv;
+
+/opt/apache-hive-4.0.1-bin/bin/hive/beeline
 ```
 ```sql
 CREATE EXTERNAL TABLE titanic (
