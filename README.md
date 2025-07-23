@@ -293,7 +293,7 @@ After creating some default HDFS directories required for MapReduce and Hive, st
 ```bash
 /opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /mr-history;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chmod -R 1777 /mr-history;
-/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /tmp;
+/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /tmp/hadoop-yarn-hadoop/;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chmod -R 1777 /tmp;
 /opt/hadoop-3.4.1/bin/mapred --daemon stop historyserver;
 /opt/hadoop-3.4.1/sbin/stop-all.sh;
@@ -369,10 +369,10 @@ export HADOOP_HOME=/opt/hadoop-3.4.1
 
 if [[ "$SERVICE" == "metastore" ]]; then
    export HIVE_LOG4J_FILE=/opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties
-   export HADOOP_OPTS="$HADOOP_OPTS -Dlog4j2.configurationFile=$HIVE_LOG4J_FILE"
+   export HADOOP_OPTS="$HADOOP_OPTS -Dhive.log.dir=$HIVE_HOME/logs -Dlog4j2.configurationFile=$HIVE_LOG4J_FILE"
 elif [[ "$SERVICE" == "hiveserver2" ]]; then
    export HIVE_LOG4J_FILE=/opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties
-   export HADOOP_OPTS="$HADOOP_OPTS -Dlog4j2.configurationFile=$HIVE_LOG4J_FILE"
+   export HADOOP_OPTS="$HADOOP_OPTS -Dhive.log.dir=$HIVE_HOME/logs -Dlog4j2.configurationFile=$HIVE_LOG4J_FILE"
 fi
 ```
 Create `/opt/apache-hive-4.0.1-bin/conf/hive-site.xml` and set the configuration variables according to your environment.
@@ -473,7 +473,6 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-log4j2.properties;
 ```
 ```text
 # property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
-property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 ```
 2. hive-server2-log4j2.properties
 ```bash
@@ -485,7 +484,6 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-server2-log4j2.properties;
 ```text
 # property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
 # property.hive.log.file = hive.log
-property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 property.hive.log.file = hiveserver2.log
 ```
 3. hive-metastore-log4j2.properties
@@ -498,7 +496,6 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties;
 ```text
 # property.hive.log.dir = ${sys:java.io.tmpdir}/${sys:user.name}
 # property.hive.log.file = hive.log
-property.hive.log.dir = /opt/apache-hive-4.0.1-bin/logs
 property.hive.log.file = metastore.log
 ```
 ---
@@ -578,8 +575,8 @@ You can access the Web UI for Hive service using the following URLs.
 ```bash
 wget https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv -O titanic.csv;
 tail -n +2 titanic.csv > titanic_noheader.csv;
-/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir /tmp/hive_input;
-/opt/hadoop-3.4.1/bin/hdfs dfs -put -f titanic_noheader.csv /tmp/hive_input/titanic_noheader.csv;
+/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir /tmp/ext_titanic;
+/opt/hadoop-3.4.1/bin/hdfs dfs -put -f titanic_noheader.csv /tmp/ext_titanic/titanic_noheader.csv;
 ```
 ```sql
 CREATE EXTERNAL TABLE titanic (
@@ -602,7 +599,7 @@ WITH SERDEPROPERTIES (
   "quoteChar"     = "\""
 )
 STORED AS TEXTFILE
-LOCATION '/tmp/hive_input';
+LOCATION '/tmp/ext_titanic';
 ```
 ```sql
 -- Survival rate by gender
