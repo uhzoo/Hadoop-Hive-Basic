@@ -591,7 +591,7 @@ tail -n +2 titanic.csv > titanic_noheader.csv;
 # Upload Titanic CSV (no header) to HDFS
 /opt/hadoop-3.4.1/bin/hdfs dfs -put -f titanic_noheader.csv /tmp/ext_titanic/titanic_noheader.csv;
 
-/opt/apache-hive-4.0.1-bin/bin/hive/beeline;
+/opt/apache-hive-4.0.1-bin/bin/beeline;
 ```
 ```sql
 CREATE EXTERNAL TABLE titanic (
