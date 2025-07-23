@@ -13,7 +13,7 @@ To use them as-is, update your hosts file to map `test.hadoop.com` to your serve
 - Windows: `C:\Windows\System32\drivers\etc\hosts`
 - Mac/Linux: `/etc/hosts`
   
-Alternatively, you can access services directly using ${YOUR_IP}:${PORT}.
+Alternatively, you can access services directly using `${YOUR_IP}:${PORT}`.
 
 ## Install Hadoop
 Before installing Hadoop, disable the firewall for convenience.
@@ -297,6 +297,7 @@ After creating some default HDFS directories required for MapReduce, stop all Ha
 /opt/hadoop-3.4.1/bin/hdfs dfs -chmod -R 1777 /tmp;
 /opt/hadoop-3.4.1/bin/mapred --daemon stop historyserver;
 /opt/hadoop-3.4.1/sbin/stop-all.sh;
+logout;
 ```
 ---
 ## Install Hive
@@ -311,7 +312,7 @@ PostgreSQL 16 requires an initial database setup before it can be started.
 ```bash
 postgresql-16-setup initdb;
 ```
-To allow both local and remote connections to PostgreSQL, set listen_addresses to '*' in `/var/lib/pgsql/16/data/postgresql.conf`, and modify `/var/lib/pgsql/16/data/pg_hba.conf` to allow remote client access.
+To allow both local and remote connections to PostgreSQL, set `listen_addresses = '*'` in `/var/lib/pgsql/16/data/postgresql.conf`, and modify `/var/lib/pgsql/16/data/pg_hba.conf` to allow remote client access.
 ```bash
 vi /var/lib/pgsql/16/data/postgresql.conf;
 ```
@@ -525,6 +526,7 @@ Now start hadoop, and Create the default directory for Hive.
 /opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /user/hive/warehouse;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chmod 770 /user/hive/warehouse;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chown -R hive:hadoop /user/hive;
+logout;
 ```
 ---
 Initialize the Hive metastore schema in the PostgreSQL database using the following command.
@@ -556,6 +558,7 @@ You can access the Web UI for Hive service using the following URLs.
 ---
 ## Simple Hadoop Test Jobs.
 ```bash
+su - hadoop;
 # Generate 1GB of synthetic data (100 bytes × 10 million rows) for TeraSort benchmark
 /opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar teragen 10000000 /tmp/teragen.dat
 
@@ -573,9 +576,17 @@ You can access the Web UI for Hive service using the following URLs.
 ```
 ## Simple Hive Test.
 ```bash
+su - hive;
+# Download Titanic dataset CSV file
 wget https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv -O titanic.csv;
+
+# Remove header from CSV file
 tail -n +2 titanic.csv > titanic_noheader.csv;
+
+# Create directory in HDFS for Titanic data
 /opt/hadoop-3.4.1/bin/hdfs dfs -mkdir /tmp/ext_titanic;
+
+# Upload Titanic CSV (no header) to HDFS
 /opt/hadoop-3.4.1/bin/hdfs dfs -put -f titanic_noheader.csv /tmp/ext_titanic/titanic_noheader.csv;
 ```
 ```sql
