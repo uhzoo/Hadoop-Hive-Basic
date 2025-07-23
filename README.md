@@ -71,7 +71,10 @@ vi /opt/hadoop-3.4.1/etc/hadoop/hadoop-env.sh;
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.462.b08-3.el9.x86_64/jre
 # export HADOOP_HOME=
 export HADOOP_HOME=/opt/hadoop-3.4.1
-export HADOOP_HEAPSIZE=512
+# export HADOOP_HEAPSIZE_MAX=
+export HADOOP_HEAPSIZE_MAX=512
+# export HADOOP_HEAPSIZE_MIN=
+export HADOOP_HEAPSIZE_MIN=512
 ```
 Next, configure the following Hadoop XML files to set up the core components.
 1. core-site.xml
@@ -286,8 +289,12 @@ You can access the Web UIs of each Hadoop service using the following URLs.
 |NodeManager|http://test.hadoop.com:8042|
 |JobHistoryServer|http://test.hadoop.com:19888|
 
-Now stop all Hadoop services before proceeding with the Hive installation.
+After creating some default HDFS directories required for MapReduce and Hive, stop all Hadoop services before proceeding with the Hive installation.
 ```bash
+/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /mr-history;
+/opt/hadoop-3.4.1/bin/hdfs dfs -chmod -R 1777 /mr-history;
+/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /tmp;
+/opt/hadoop-3.4.1/bin/hdfs dfs -chmod -R 1777 /tmp;
 /opt/hadoop-3.4.1/bin/mapred --daemon stop historyserver;
 /opt/hadoop-3.4.1/sbin/stop-all.sh;
 ```
@@ -309,7 +316,7 @@ To allow both local and remote connections to PostgreSQL, set listen_addresses t
 vi /var/lib/pgsql/16/data/postgresql.conf;
 ```
 ```text
-# listen_addresses = 'localhost'
+# listen_addresses = '*'          # what IP address(es) to listen on;
 listen_addresses = '*'
 ```
 This change allows PostgreSQL to accept connections from all IP addresses.
@@ -359,7 +366,7 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-env.sh;
 ```text
 # HADOOP_HOME=${bin}/../../hadoop
 export HADOOP_HOME=/opt/hadoop-3.4.1
-export HIVE_SERVER2_HEAPSIZE=512
+
 if [[ "$SERVICE" == "metastore" ]]; then
    export HIVE_LOG4J_FILE=/opt/apache-hive-4.0.1-bin/conf/hive-metastore-log4j2.properties
    export HADOOP_OPTS="$HADOOP_OPTS -Dlog4j2.configurationFile=$HIVE_LOG4J_FILE"
@@ -423,7 +430,7 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-site.xml;
     </property>
     <property>
         <name>hive.server2.thrift.bind.host</name>
-        <value>0.0.0.0</value>
+        <value>test.hadoop.com</value>
         <description>Bind host on which to run the HiveServer2 Thrift service.</description>
     </property>
     <property>
@@ -516,8 +523,6 @@ Now start hadoop, and Create the default directory for Hive.
 /opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /user/hive/warehouse;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chmod 770 /user/hive/warehouse;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chown -R hive:hadoop /user/hive;
-/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /tmp;
-/opt/hadoop-3.4.1/bin/hdfs dfs -chmod -R 1777 /tmp;
 ```
 ---
 Initialize the Hive metastore schema in the PostgreSQL database using the following command.
@@ -546,5 +551,86 @@ You can access the Web UI for Hive service using the following URLs.
 | ------------- | ------------- |
 |HiveServer2|http://test.hadoop.com:10002|
 
+---
+## Simple Hadoop Test Jobs.
+```bash
+# Generate 1GB of synthetic data (100 bytes × 10 million rows) for TeraSort benchmark
+/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar teragen 10000000 /tmp/teragen.dat
 
+# Sort the generated data using TeraSort
+/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar terasort /tmp/teragen.dat /tmp/terasort.dat
 
+# Validate the sorted data to ensure correct ordering
+/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar teravalidate /tmp/terasort.dat /tmp/teravalidate.dat
+
+# Generate 1GB of random text data (used to test WordCount)
+/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar randomtextwriter -D mapreduce.randomtextwriter.totalbytes=1000000000 /tmp/randomtextwriter.dat
+
+# Run WordCount job on the generated random text data
+/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar wordcount /tmp/randomtextwriter.dat /tmp/wordcount.dat
+```
+## Simple Hive Test.
+```bash
+wget https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv -O titanic.csv;
+tail -n +2 titanic.csv > titanic_noheader.csv;
+/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir /tmp/hive_input;
+/opt/hadoop-3.4.1/bin/hdfs dfs -put -f titanic_noheader.csv /tmp/hive_input/titanic_noheader.csv;
+```
+```sql
+CREATE EXTERNAL TABLE titanic (
+  passengerid INT,
+  survived INT,
+  pclass INT,
+  name STRING,
+  sex STRING,
+  age DOUBLE,
+  sibsp INT,
+  parch INT,
+  ticket STRING,
+  fare DOUBLE,
+  cabin STRING,
+  embarked STRING
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES (
+  "separatorChar" = ",",
+  "quoteChar"     = "\""
+)
+STORED AS TEXTFILE
+LOCATION '/tmp/hive_input';
+```
+```sql
+-- Survival rate by gender
+SELECT sex, AVG(survived) AS survival_rate FROM titanic GROUP BY sex;
+
+-- Survival rate by passenger class (1st, 2nd, 3rd)
+SELECT pclass, AVG(survived) AS survival_rate FROM titanic GROUP BY pclass;
+
+-- Survival rate by gender and class
+SELECT sex, pclass, AVG(survived) AS survival_rate FROM titanic GROUP BY sex, pclass;
+
+-- Survival rate by family status (alone vs. with family)
+SELECT
+  CASE WHEN sibsp + parch = 0 THEN 'Alone' ELSE 'With Family' END AS family_status,
+  AVG(survived) AS survival_rate
+FROM titanic
+GROUP BY CASE WHEN sibsp + parch = 0 THEN 'Alone' ELSE 'With Family' END;
+
+-- Average age by survival status
+SELECT survived, AVG(age) AS avg_age FROM titanic GROUP BY survived;
+
+-- Fare distribution by survival status
+SELECT survived, AVG(fare) AS avg_fare FROM titanic GROUP BY survived;
+
+-- Average age and fare overall
+SELECT AVG(age) AS avg_age, AVG(fare) AS avg_fare FROM titanic;
+
+-- Average fare by passenger class
+SELECT pclass, AVG(fare) AS avg_fare FROM titanic GROUP BY pclass;
+
+-- Survival rate by embarkation port
+SELECT embarked, AVG(survived) AS survival_rate FROM titanic GROUP BY embarked;
+
+-- Average fare by embarkation port
+SELECT embarked, AVG(fare) AS avg_fare FROM titanic GROUP BY embarked;
+```
