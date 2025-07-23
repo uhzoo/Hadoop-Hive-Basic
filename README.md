@@ -438,6 +438,11 @@ vi /opt/apache-hive-4.0.1-bin/conf/hive-site.xml;
         <value>10000</value>
         <description>Port number of HiveServer2 Thrift interface when hive.server2.transport.mode is 'binary'.</description>
     </property>
+    <property>
+        <name>hive.exec.scratchdir</name>
+        <value>/tmp/hive</value>
+        <description>HDFS root scratch dir for Hive jobs which gets created with write all (733) permission. For each connecting user, an HDFS scratch dir: ${hive.exec.scratchdir}/&lt;username&gt; is created, with ${hive.scratch.dir.permission}.</description>
+    </property>
 </configuration>
 ```
 For convenience, create `/opt/apache-hive-4.0.1-bin/conf/beeline-hs2-connection.xml` to preconfigure Beeline login credentials.
