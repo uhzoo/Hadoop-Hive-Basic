@@ -563,18 +563,18 @@ su - hadoop;
 /opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar teragen 10000000 /tmp/teragen.dat
 
 # Sort the generated data using TeraSort
-/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar terasort /tmp/teragen.dat /tmp/terasort.dat
+/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar terasort /tmp/teragen.dat /tmp/terasort.dat;
 
 # Validate the sorted data to ensure correct ordering
-/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar teravalidate /tmp/terasort.dat /tmp/teravalidate.dat
+/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar teravalidate /tmp/terasort.dat /tmp/teravalidate.dat;
 
 # Generate 1GB of random text data (used to test WordCount)
-/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar randomtextwriter -D mapreduce.randomtextwriter.totalbytes=1000000000 /tmp/randomtextwriter.dat
+/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar randomtextwriter -D mapreduce.randomtextwriter.totalbytes=1000000000 /tmp/randomtextwriter.dat;
 
 # Run WordCount job on the generated random text data
-/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar wordcount /tmp/randomtextwriter.dat /tmp/wordcount.dat
+/opt/hadoop-3.4.1/bin/hadoop jar /opt/hadoop-3.4.1/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.1.jar wordcount /tmp/randomtextwriter.dat /tmp/wordcount.dat;
 
-/opt/hadoop-3.4.1/bin/hadoop dfs -ls /tmp
+/opt/hadoop-3.4.1/bin/hadoop dfs -ls /tmp;
 ```
 ## Simple Hive Test.
 ```bash
@@ -591,7 +591,7 @@ tail -n +2 titanic.csv > titanic_noheader.csv;
 # Upload Titanic CSV (no header) to HDFS
 /opt/hadoop-3.4.1/bin/hdfs dfs -put -f titanic_noheader.csv /tmp/ext_titanic/titanic_noheader.csv;
 
-/opt/apache-hive-4.0.1-bin/bin/hive/beeline
+/opt/apache-hive-4.0.1-bin/bin/hive/beeline;
 ```
 ```sql
 CREATE EXTERNAL TABLE titanic (
