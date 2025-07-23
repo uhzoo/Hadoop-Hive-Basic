@@ -289,11 +289,11 @@ You can access the Web UIs of each Hadoop service using the following URLs.
 |NodeManager|http://test.hadoop.com:8042|
 |JobHistoryServer|http://test.hadoop.com:19888|
 
-After creating some default HDFS directories required for MapReduce and Hive, stop all Hadoop services before proceeding with the Hive installation.
+After creating some default HDFS directories required for MapReduce, stop all Hadoop services before proceeding with the Hive installation.
 ```bash
 /opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /mr-history;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chmod -R 1777 /mr-history;
-/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /tmp/hadoop-yarn-hadoop/;
+/opt/hadoop-3.4.1/bin/hdfs dfs -mkdir -p /tmp/hadoop-yarn/staging;
 /opt/hadoop-3.4.1/bin/hdfs dfs -chmod -R 1777 /tmp;
 /opt/hadoop-3.4.1/bin/mapred --daemon stop historyserver;
 /opt/hadoop-3.4.1/sbin/stop-all.sh;
