@@ -8,7 +8,7 @@ Step-by-step guide for installing a basic Hadoop and Hive.
 |Hive|4.0.1|
 |Hive MetaStore|PostgreSQL 16|
 
-The following guide uses `test.hadoop.com` in example URLs, and assumes you have root access.  
+The following guide uses `test.hadoop.com` in example URLs.  
 To use them as-is, update your hosts file to map `test.hadoop.com` to your server’s IP address.
 - Windows: `C:\Windows\System32\drivers\etc\hosts`
 - Mac/Linux: `/etc/hosts`
